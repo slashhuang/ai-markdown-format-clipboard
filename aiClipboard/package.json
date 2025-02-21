@@ -1,0 +1,12 @@
+{
+  "name": "@ai-markdown-formate-lipboard/clipboard",
+  "version": "0.1.0",
+  "private": true,
+  "main": "./src/index.ts",
+  "scripts": {
+    "build": "vue-cli-service build"
+  },
+  "dependencies": {
+    "marked": "^15.0.7"
+  }
+}
