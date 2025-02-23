@@ -4,10 +4,7 @@
 // 读取剪切板内容
 import * as marked from 'marked';
 const log = console.log.bind(console);
-interface ReadClipboardContentResult {
-  text: string;
-  html: string;
-}
+
 const markdown2Html = async (content: string) => {
   const result = await marked.parse(content);
   return result;
@@ -34,47 +31,68 @@ const copyHtmlToClipboard = async ({
     log('复制失败', err);
   });
 };
-export const aiChatContent2Anywhere = async (content: string): Promise<ReadClipboardContentResult> => {
-  const htmlContent = await markdown2Html(content);
-  await copyHtmlToClipboard({
-    htmlContent,
-    content
-  });
-  const result = await readClipboardContent();
-  return result;
-};
 
 /**
  * @desc 读取剪切板内容
  */
-export async function readClipboardContent (): Promise<ReadClipboardContentResult> {
+export interface ClipboardResult {
+  type: string;
+  content: unknown;
+}
+export const getClipboardContents = async (): Promise<ClipboardResult[]> => {
   try {
-    // 读取剪切板内容
+    // 请求剪切板读取权限
     const clipboardItems = await navigator.clipboard.read();
-    let text = '';
-    let html = '';
-    // 遍历剪切板中的每一项
+    // 遍历剪切板中的内容
+    const results = [];
     for (const clipboardItem of clipboardItems) {
-      // 检查是否有 text/plain 类型
-      if (clipboardItem.types.includes('text/plain')) {
-        const textBlob = await clipboardItem.getType('text/plain');
-        text = await textBlob.text();
-        console.log('剪切板中的纯文本内容:', text);
-      }
-
-      // 检查是否有 text/html 类型
-      if (clipboardItem.types.includes('text/html')) {
-        const htmlBlob = await clipboardItem.getType('text/html');
-        html = await htmlBlob.text();
-        console.log('剪切板中的HTML内容:', html);
+      // 遍历每个内容项支持的类型
+      for (const type of clipboardItem.types) {
+        const blob = await clipboardItem.getType(type);
+        let content;
+        // 根据不同类型解析内容
+        if (type.startsWith('text/')) {
+          // 处理文本类型
+          content = await blob.text();
+          console.log(`剪切板中的文本${type}内容:`, content);
+        } else if (type.startsWith('image/')) {
+          // 处理图片类型
+          content = URL.createObjectURL(blob);
+        } else {
+          // 其他二进制类型
+          content = blob;
+        }
+        results.push({
+          type: type,
+          content: content
+        });
       }
     }
-    return {
-      text,
-      html
-    };
+    return results;
   } catch (err) {
-    console.error('读取剪切板内容失败:', err);
-    throw err;
+    throw new Error('无法读取剪切板内容:', err);
   }
+};
+/**
+ * @desc 将ai剪切板的内容转换成可粘贴到编辑器的内容
+ */
+export const genClipboardText2Html = async (input: ClipboardResult[]): Promise<string> => {
+  const content = getTextContentInClipboard(input);
+  if (content) {
+    const htmlContent = await markdown2Html(content);
+    await copyHtmlToClipboard({
+      htmlContent,
+      content
+    });
+    return htmlContent;
+  } else {
+    return '';
+  }
+};
+
+/**
+ * @desc 从剪切板内容中获取文本内容
+ */
+export function getTextContentInClipboard (input: ClipboardResult[]): string {
+  return input.find(item => item.type === 'text/plain')?.content as string;
 }
