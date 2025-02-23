@@ -1,6 +1,8 @@
-## Ai 相关的工具 [WIP]
+## Ai 相关的工具
 
-## 比如 Deepseek 的剪切板内容转换
+## Deepseek 的剪切板内容转换: [网址](https://slashhuang.github.io/ai-markdown-format-clipboard)
+
+## 示例
 
 ![Deepseek内容转换](./assets//ai内容的剪切板转换工具.png)
 

@@ -11,11 +11,11 @@
       <el-col :span="10" class="left">
         <el-row>
           <el-col :span="24">
-            <el-button type="primary" @click="paste">粘贴内容</el-button>
+            <el-button type="primary" @click="paste">粘贴</el-button>
           </el-col>
           <el-col :span="10">
-            <el-button type="success" @click="tranform">
-              转换成富文本到预览区
+            <el-button type="success" @click="tranform"
+              >将Deepseek内容转换成可读格式
             </el-button>
           </el-col>
         </el-row>
@@ -37,7 +37,7 @@
         </el-row>
         <el-row>
           <el-col :span="10">
-            <el-button type="primary" @click="copy"
+            <el-button type="primary" @click="copy" v-if="tranformedTxt"
               >复制格式化后的内容</el-button
             >
           </el-col>
