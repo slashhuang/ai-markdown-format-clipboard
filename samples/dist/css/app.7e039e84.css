@@ -1,1 +1,0 @@
-#app{margin-left:10px;margin-right:10px;height:100vh;width:100vw;display:flex;flex-direction:column}#app .header{display:flex;flex-direction:row;align-items:center;justify-content:center}#app .container{flex:1}#app .container .left{flex:1;border-right:1px solid #f0f0f0;padding:4px}#app .container .right{flex:1;padding:4px}
